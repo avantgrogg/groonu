@@ -1,13 +1,35 @@
+require "bundler/capistrano"
+
 set :application, "groonu.com"
-set :repository,  "/var/www/"
+set :repository,  "https://github.com/forgetlines/groonu.git/trunk"
+set :rvm_ruby_string, 'ruby-1.9.3-p194@groonu'
+set :rvm_type, :user
 
 set :scm, :subversion
 # Or: `accurev`, `bzr`, `cvs`, `darcs`, `git`, `mercurial`, `perforce`, `subversion` or `none`
 
-role :web, "your web-server here"                          # Your HTTP server, Apache/etc
-role :app, "your app-server here"                          # This may be the same as your `Web` server
-role :db,  "your primary db-server here", :primary => true # This is where Rails migrations will run
-role :db,  "your slave db-server here"
+role :web, "groonu.com"                          # Your HTTP server, Apache/etc
+role :app, "groonu.com"                          # This may be the same as your `Web` server
+role :db,  "groonu.com", :primary => true # This is where Rails migrations will run
+
+set :deploy_to, "/var/www/vhosts/groonu.com"  # CHANGE THIS LINE TO POINT TO THE CORRECT PATH
+set :user, "root"  # CHANGE THIS LINE TO USE YOUR OCS USERNAME
+set :use_sudo, false
+set :port_number, "3001"
+
+namespace :deploy do
+	
+  task :start, :roles => :app do
+    run "cd #{deploy_to}/current; passenger start -e development -p #{port_number} -d"
+  end
+  task :stop, :roles => :app do
+    run "cd #{deploy_to}/current; passenger stop"
+  end
+  task :restart, :roles => :app do
+    run "cd #{deploy_to}/current; passenger stop; passenger start -e development -p #{port_number} -d"
+    run "echo \"WEBSITE HAS BEEN DEPLOYED\""
+  end
+end
 
 # if you want to clean up old releases on each deploy uncomment this:
 # after "deploy:restart", "deploy:cleanup"
