@@ -37,6 +37,7 @@ end
 desc "Link in the production database.yml"
 task :link_production_db do
   run "ln -nfs #{deploy_to}/shared/config/database.yml #{release_path}/config/database.yml"
+  run "cd #{release_path}; RAILS_ENV=production rake assets:precompile"
 end
 
 # if you want to clean up old releases on each deploy uncomment this:
