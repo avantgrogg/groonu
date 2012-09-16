@@ -17,6 +17,8 @@ set :user, "root"  # CHANGE THIS LINE TO USE YOUR OCS USERNAME
 set :use_sudo, false
 set :port_number, "3001"
 
+after "deploy:update_code", :link_production_db
+
 namespace :deploy do
 	
   task :start, :roles => :app do
@@ -26,9 +28,15 @@ namespace :deploy do
     run "cd #{deploy_to}/current; passenger stop"
   end
   task :restart, :roles => :app do
-    run "cd #{deploy_to}/current; passenger stop; passenger start -e development -p #{port_number} -d"
+    run "cd #{deploy_to}/current; passenger stop -p #{port_number}; passenger start -e development -p #{port_number} -d"
     run "echo \"WEBSITE HAS BEEN DEPLOYED\""
   end
+end
+
+# database.yml task
+desc "Link in the production database.yml"
+task :link_production_db do
+  run "ln -nfs #{deploy_to}/shared/config/database.yml #{release_path}/config/database.yml"
 end
 
 # if you want to clean up old releases on each deploy uncomment this:
