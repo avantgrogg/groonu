@@ -22,13 +22,13 @@ after "deploy:update_code", :link_production_db
 namespace :deploy do
 	
   task :start, :roles => :app do
-    run "cd #{deploy_to}/current; passenger start -e development -p #{port_number} -d"
+    run "cd #{deploy_to}/current; passenger start -e production -p #{port_number} -d"
   end
   task :stop, :roles => :app do
-    run "cd #{deploy_to}/current; passenger stop"
+    run "cd #{deploy_to}/current; passenger stop -p #{port_number}"
   end
   task :restart, :roles => :app do
-    run "cd #{deploy_to}/current; passenger stop -p #{port_number}; passenger start -e development -p #{port_number} -d"
+    run "cd #{deploy_to}/current; passenger stop -p #{port_number}; passenger start -e production -p #{port_number} -d"
     run "echo \"WEBSITE HAS BEEN DEPLOYED\""
   end
 end
